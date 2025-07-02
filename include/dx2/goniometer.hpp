@@ -8,7 +8,7 @@ using json = nlohmann::json;
 using Eigen::Matrix3d;
 using Eigen::Vector3d;
 
-Matrix3d axis_and_angle_as_matrix(Vector3d axis, double angle,
+inline Matrix3d axis_and_angle_as_matrix(Vector3d axis, double angle,
                                   bool deg = false) {
   double q0 = 0.0;
   double q1 = 0.0;
@@ -62,14 +62,14 @@ protected:
   std::size_t scan_axis_{0};
 };
 
-void Goniometer::init() {
+inline void Goniometer::init() {
   // Sets the matrices from the axes and angles
   setting_rotation_ = calculate_setting_rotation();
   sample_rotation_ = calculate_sample_rotation();
   rotation_axis_ = axes_[scan_axis_];
 }
 
-Matrix3d Goniometer::calculate_setting_rotation() {
+inline Matrix3d Goniometer::calculate_setting_rotation() {
   Matrix3d setting_rotation{{1, 0, 0}, {0, 1, 0}, {0, 0, 1}};
   for (std::size_t i = scan_axis_ + 1; i < axes_.size(); i++) {
     Matrix3d R = axis_and_angle_as_matrix(axes_[i], angles_[i], true);
@@ -78,7 +78,7 @@ Matrix3d Goniometer::calculate_setting_rotation() {
   return setting_rotation;
 }
 
-Matrix3d Goniometer::calculate_sample_rotation() {
+inline Matrix3d Goniometer::calculate_sample_rotation() {
   Matrix3d sample_rotation{{1, 0, 0}, {0, 1, 0}, {0, 0, 1}};
   for (std::size_t i = 0; i < scan_axis_; i++) {
     Matrix3d R = axis_and_angle_as_matrix(axes_[i], angles_[i], true);
@@ -87,7 +87,7 @@ Matrix3d Goniometer::calculate_sample_rotation() {
   return sample_rotation;
 }
 
-Goniometer::Goniometer(std::vector<Vector3d> axes, std::vector<double> angles,
+inline Goniometer::Goniometer(std::vector<Vector3d> axes, std::vector<double> angles,
                        std::vector<std::string> names, std::size_t scan_axis)
     : axes_{axes.begin(), axes.end()}, angles_{angles.begin(), angles.end()},
       names_{names.begin(), names.end()}, scan_axis_{scan_axis} {
@@ -98,13 +98,13 @@ Goniometer::Goniometer(std::vector<Vector3d> axes, std::vector<double> angles,
   init();
 }
 
-Matrix3d Goniometer::get_setting_rotation() const { return setting_rotation_; }
+inline Matrix3d Goniometer::get_setting_rotation() const { return setting_rotation_; }
 
-Matrix3d Goniometer::get_sample_rotation() const { return sample_rotation_; }
+inline Matrix3d Goniometer::get_sample_rotation() const { return sample_rotation_; }
 
-Vector3d Goniometer::get_rotation_axis() const { return rotation_axis_; }
+inline Vector3d Goniometer::get_rotation_axis() const { return rotation_axis_; }
 
-Goniometer::Goniometer(json goniometer_data) {
+inline Goniometer::Goniometer(json goniometer_data) {
   std::vector<std::string> required_keys = {"axes", "angles", "names",
                                             "scan_axis"};
   for (const auto &key : required_keys) {
@@ -139,7 +139,7 @@ Goniometer::Goniometer(json goniometer_data) {
   init();
 }
 
-json Goniometer::to_json() const {
+inline json Goniometer::to_json() const {
   json goniometer_data;
   goniometer_data["axes"] = axes_;
   goniometer_data["angles"] = angles_;

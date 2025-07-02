@@ -75,7 +75,7 @@ struct TraverseData {
  * @param op_data Pointer to a `GroupScanContext`.
  * @return 0 on success, non-zero to stop iteration.
  */
-herr_t scan_group_callback(hid_t loc_id, const char *name, const H5L_info2_t *,
+inline herr_t scan_group_callback(hid_t loc_id, const char *name, const H5L_info2_t *,
                            void *op_data) {
   auto *context = static_cast<GroupScanContext *>(op_data);
 
@@ -103,7 +103,7 @@ void traverse_hdf5(hid_t loc_id, const std::string &path,
  *
  * Recursively visits groups and appends dataset paths to `TraverseData`.
  */
-herr_t group_iterator(hid_t loc_id, const char *name, const H5L_info2_t *info,
+inline herr_t group_iterator(hid_t loc_id, const char *name, const H5L_info2_t *info,
                       void *op_data) {
   TraverseData *traverse_data = static_cast<TraverseData *>(op_data);
   std::string full_path =
@@ -162,7 +162,7 @@ herr_t group_iterator(hid_t loc_id, const char *name, const H5L_info2_t *info,
  * @param datasets Output vector to populate.
  * @param visited_groups Prevents revisiting cycles.
  */
-void traverse_hdf5(hid_t loc_id, const std::string &path,
+inline void traverse_hdf5(hid_t loc_id, const std::string &path,
                    std::vector<std::string> &datasets,
                    std::unordered_set<std::string> &visited_groups) {
   // std::cout << "Traversing: " << (path.empty() ? "/" : path) << std::endl;
@@ -185,7 +185,7 @@ void traverse_hdf5(hid_t loc_id, const std::string &path,
  * @param group_name Path to the group (e.g., "/dials/processing/group_0").
  * @return Vector of full dataset paths.
  */
-std::vector<std::string> get_datasets_in_group(std::string_view filename,
+inline std::vector<std::string> get_datasets_in_group(std::string_view filename,
                                                std::string_view group_name) {
   std::string fname(filename);
   std::string gpath(group_name);
@@ -301,7 +301,7 @@ std::vector<T> read_array_from_h5_file(std::string_view filename,
  * @param group_name Name of the top-level group to search.
  * @return Vector of full dataset paths.
  */
-std::vector<std::string>
+inline std::vector<std::string>
 get_datasets_in_group_recursive(std::string_view filename,
                                 std::string_view group_name) {
   std::string fname(filename);
@@ -364,7 +364,7 @@ inline void read_experiment_metadata(hid_t group_id,
  * @param path Full dataset path (e.g., `/a/b/c`).
  * @return The base name (`c`).
  */
-std::string get_dataset_name(std::string_view path) {
+inline std::string get_dataset_name(std::string_view path) {
   size_t pos = path.find_last_of('/');
   if (pos == std::string_view::npos) {
     return std::string(path); // No '/' found, return the whole path

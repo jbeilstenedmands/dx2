@@ -13,7 +13,7 @@ using json = nlohmann::json;
 using Eigen::Matrix3d;
 using Eigen::Vector3d;
 
-Matrix3d Matrix3d_from_gemmi_cb(gemmi::Op cb) {
+inline Matrix3d Matrix3d_from_gemmi_cb(gemmi::Op cb) {
   std::array<std::array<int, 3>, 3> rot = cb.rot;
   return Matrix3d{{(double)(rot[0][0] / cb.DEN), (double)(rot[1][0] / cb.DEN),
                    (double)(rot[2][0] / cb.DEN)},
@@ -46,7 +46,7 @@ protected:
   Matrix3d U_;
 };
 
-void Crystal::init_from_abc(Vector3d a, Vector3d b, Vector3d c) {
+inline void Crystal::init_from_abc(Vector3d a, Vector3d b, Vector3d c) {
   // calculate B matrix, A matrix, set the input cell values
   Matrix3d A{{a[0], a[1], a[2]}, {b[0], b[1], b[2]}, {c[0], c[1], c[2]}};
   A_ = A.inverse();
@@ -64,13 +64,13 @@ void Crystal::init_from_abc(Vector3d a, Vector3d b, Vector3d c) {
   U_ = A_ * B_.inverse();
 }
 
-Crystal::Crystal(Vector3d a, Vector3d b, Vector3d c,
+inline Crystal::Crystal(Vector3d a, Vector3d b, Vector3d c,
                  gemmi::SpaceGroup space_group)
     : space_group_(space_group) {
   init_from_abc(a, b, c);
 }
 
-Crystal::Crystal(json crystal_data) {
+inline Crystal::Crystal(json crystal_data) {
   std::vector<std::string> required_keys = {"real_space_a", "real_space_b",
                                             "real_space_c",
                                             "space_group_hall_symbol"};
@@ -94,7 +94,7 @@ Crystal::Crystal(json crystal_data) {
   init_from_abc(rsa, rsb, rsc);
 }
 
-void Crystal::niggli_reduce() {
+inline void Crystal::niggli_reduce() {
   char centering{'P'};
   gemmi::GruberVector gv(unit_cell_, centering, true);
   gv.niggli_reduce();
@@ -110,7 +110,7 @@ void Crystal::niggli_reduce() {
   U_ = A_ * B_.inverse();
 }
 
-void Crystal::set_A_matrix(Matrix3d A) {
+inline void Crystal::set_A_matrix(Matrix3d A) {
   // input in reciprocal units
   A_ = A;
   Matrix3d Areal = A.inverse();
@@ -131,17 +131,17 @@ void Crystal::set_A_matrix(Matrix3d A) {
   U_ = A_ * B_.inverse();
 }
 
-gemmi::UnitCell Crystal::get_unit_cell() const { return unit_cell_; }
+inline gemmi::UnitCell Crystal::get_unit_cell() const { return unit_cell_; }
 
-gemmi::SpaceGroup Crystal::get_space_group() const { return space_group_; }
+inline gemmi::SpaceGroup Crystal::get_space_group() const { return space_group_; }
 
-Matrix3d Crystal::get_A_matrix() const { return A_; }
+inline Matrix3d Crystal::get_A_matrix() const { return A_; }
 
-Matrix3d Crystal::get_B_matrix() const { return B_; }
+inline Matrix3d Crystal::get_B_matrix() const { return B_; }
 
-Matrix3d Crystal::get_U_matrix() const { return U_; }
+inline Matrix3d Crystal::get_U_matrix() const { return U_; }
 
-json Crystal::to_json() const {
+inline json Crystal::to_json() const {
   json crystal_data;
   crystal_data["__id__"] = "crystal";
   Matrix3d A_inv = A_.inverse();

@@ -8,7 +8,7 @@ using json = nlohmann::json;
 using Eigen::Matrix3d;
 using Eigen::Vector3d;
 
-double attenuation_length(double mu, double t0, Vector3d s1, Vector3d fast,
+inline double attenuation_length(double mu, double t0, Vector3d s1, Vector3d fast,
                           Vector3d slow, Vector3d origin) {
   Vector3d normal = fast.cross(slow);
   double distance = origin.dot(normal);
@@ -67,15 +67,15 @@ protected:
   bool parallax_correction_ = false;
 };
 
-Vector3d Panel::get_origin() const { return origin_; }
-Vector3d Panel::get_fast_axis() const { return fast_axis_; }
-Vector3d Panel::get_slow_axis() const { return slow_axis_; }
-Vector3d Panel::get_normal() const { return normal_; }
-std::array<double, 2> Panel::get_image_size_mm() const {
+inline Vector3d Panel::get_origin() const { return origin_; }
+inline Vector3d Panel::get_fast_axis() const { return fast_axis_; }
+inline Vector3d Panel::get_slow_axis() const { return slow_axis_; }
+inline Vector3d Panel::get_normal() const { return normal_; }
+inline std::array<double, 2> Panel::get_image_size_mm() const {
   return {image_size_[0] * pixel_size_[0], image_size_[1] * pixel_size_[1]};
 }
-double Panel::get_directed_distance() const { return origin_.dot(normal_); }
-void Panel::update(Matrix3d d) {
+inline double Panel::get_directed_distance() const { return origin_.dot(normal_); }
+inline void Panel::update(Matrix3d d) {
   d_ = d;
   D_ = d_.inverse();
   fast_axis_ = {d(0, 0), d(1, 0), d(2, 0)};
@@ -84,7 +84,7 @@ void Panel::update(Matrix3d d) {
   normal_ = fast_axis_.cross(slow_axis_);
 }
 
-Panel::Panel(json panel_data) {
+inline Panel::Panel(json panel_data) {
   Vector3d fast{{panel_data["fast_axis"][0], panel_data["fast_axis"][1],
                  panel_data["fast_axis"][2]}};
   Vector3d slow{{panel_data["slow_axis"][0], panel_data["slow_axis"][1],
@@ -118,7 +118,7 @@ Panel::Panel(json panel_data) {
   }
 }
 
-json Panel::to_json() const {
+inline json Panel::to_json() const {
   json panel_data;
   panel_data["name"] = name_;
   panel_data["type"] = type_;
@@ -139,9 +139,9 @@ json Panel::to_json() const {
   return panel_data;
 }
 
-Matrix3d Panel::get_d_matrix() const { return d_; }
+inline Matrix3d Panel::get_d_matrix() const { return d_; }
 
-std::array<double, 2> Panel::get_ray_intersection(Vector3d s1) const {
+inline std::array<double, 2> Panel::get_ray_intersection(Vector3d s1) const {
   Vector3d v = D_ * s1;
   // assert v[2] > 0
   std::array<double, 2> pxy;
@@ -151,7 +151,7 @@ std::array<double, 2> Panel::get_ray_intersection(Vector3d s1) const {
   return pxy; // in mmm
 }
 
-std::array<double, 2> Panel::px_to_mm(double x, double y) const {
+inline std::array<double, 2> Panel::px_to_mm(double x, double y) const {
   double x1 = x * pixel_size_[0];
   double x2 = y * pixel_size_[1];
   if (!parallax_correction_) {
@@ -182,14 +182,14 @@ protected:
   std::vector<Panel> _panels{};
 };
 
-Detector::Detector(json detector_data) {
+inline Detector::Detector(json detector_data) {
   json panel_data = detector_data["panels"];
   for (json::iterator it = panel_data.begin(); it != panel_data.end(); ++it) {
     _panels.push_back(Panel(*it));
   }
 }
 
-json Detector::to_json() const {
+inline json Detector::to_json() const {
   json detector_data;
   std::vector<json> panels_array;
   for (auto p = _panels.begin(); p != _panels.end(); ++p) {
@@ -199,8 +199,8 @@ json Detector::to_json() const {
   return detector_data;
 }
 
-std::vector<Panel> Detector::panels() const { return _panels; }
+inline std::vector<Panel> Detector::panels() const { return _panels; }
 
-void Detector::update(Matrix3d d) { _panels[0].update(d); }
+inline void Detector::update(Matrix3d d) { _panels[0].update(d); }
 
 #endif // DX2_MODEL_DETECTOR_H

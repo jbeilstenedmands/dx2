@@ -23,14 +23,14 @@ protected:
   double oscillation_start_{0.0};
 };
 
-Scan::Scan(std::array<int, 2> image_range, std::array<double, 2> oscillation)
+inline Scan::Scan(std::array<int, 2> image_range, std::array<double, 2> oscillation)
     : image_range_{image_range} {
   num_images_ = image_range_[1] - image_range_[0] + 1;
   oscillation_start_ = oscillation[0];
   oscillation_width_ = oscillation[1];
 }
 
-Scan::Scan(json scan_data) {
+inline Scan::Scan(json scan_data) {
   // minimal required keys are image range and ["properties"]:"oscillation"
   std::vector<std::string> required_keys = {"image_range", "properties"};
   for (const auto &key : required_keys) {
@@ -61,7 +61,7 @@ Scan::Scan(json scan_data) {
   oscillation_width_ = oscillation[1] - oscillation[0];
 }
 
-json Scan::to_json() const {
+inline json Scan::to_json() const {
   json scan_data;
   scan_data["image_range"] = image_range_;
   scan_data["batch_offset"] = 0; // We MUST NOT use batch offsets in dx2,
@@ -78,9 +78,9 @@ json Scan::to_json() const {
   return scan_data;
 }
 
-std::array<int, 2> Scan::get_image_range() const { return image_range_; }
+inline std::array<int, 2> Scan::get_image_range() const { return image_range_; }
 
-std::array<double, 2> Scan::get_oscillation() const {
+inline std::array<double, 2> Scan::get_oscillation() const {
   return {oscillation_start_, oscillation_width_};
 }
 

@@ -41,7 +41,7 @@
  * @return The identifier of the final group in the path.
  * @throws std::runtime_error If a group cannot be created or opened.
  */
-h5utils::H5Group traverse_or_create_groups(hid_t parent,
+inline h5utils::H5Group traverse_or_create_groups(hid_t parent,
                                            const std::string &path) {
   // Strip leading '/' characters, if any, to prevent empty group names
   size_t start_pos = path.find_first_not_of('/');
